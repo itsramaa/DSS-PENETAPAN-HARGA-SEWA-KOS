@@ -23,14 +23,74 @@ export interface AuthResponse {
 }
 
 // Kos Data Types
+export interface RoomSize {
+  width: number
+  length: number
+}
+
+export interface Facilities {
+  room: string[]
+  bathroom: string[]
+  building: string[]
+  parking: string[]
+}
+
+export interface Electricity {
+  type: 'token' | 'prepaid' | 'postpaid'
+  wattage: number
+  included: boolean
+}
+
+export interface Policies {
+  depositPercent: number
+  minStay: number
+  maxStay: number
+  ktpRequired: boolean
+  coupleAllowed: boolean
+  petAllowed: boolean
+  vehicleAllowed: boolean
+  maxOccupants?: number
+  childrenAllowed?: boolean
+  hasCurfew?: boolean
+  lateFee?: number
+}
+
+export interface NearbyPlace {
+  name: string
+  distance: number // in meters
+  type: 'industry' | 'restaurant' | 'worship' | 'education' | 'health' | 'shopping' | 'other'
+}
+
+export interface Cost {
+  name: string
+  amount: number
+  category: string
+}
+
+export interface CostData {
+  fixedCosts: Cost[]
+  variableCosts: Cost[]
+}
+
 export interface KosData {
   id: string
   name: string
   address: string
+  type: 'putra' | 'putri' | 'campur'
   totalRooms: number
-  roomSize: number // in m²
-  facilities: Facility[]
+  availableRooms: number
+  roomSize: RoomSize
+  currentPrice: number
+  ownerName: string
+  ownerContact: string
+  rating: number
+  totalReviews: number
+  totalTransactions: number
+  facilities: Facilities
+  electricity: Electricity
+  policies: Policies
   costs: CostData
+  nearbyPlaces: NearbyPlace[]
   createdAt: string
   updatedAt: string
 }
@@ -40,25 +100,6 @@ export interface Facility {
   name: string
   category: 'basic' | 'comfort' | 'premium'
   available: boolean
-}
-
-export interface CostData {
-  fixedCosts: FixedCost[]
-  variableCosts: VariableCost[]
-}
-
-export interface FixedCost {
-  id: string
-  name: string
-  amount: number // yearly
-  category: 'building' | 'equipment' | 'license' | 'other'
-}
-
-export interface VariableCost {
-  id: string
-  name: string
-  amount: number // monthly per room
-  category: 'utilities' | 'maintenance' | 'service' | 'other'
 }
 
 // AHP Types
@@ -144,15 +185,37 @@ export interface ApiKey {
   lastUsedAt: string | null
   expiresAt: string | null
   createdAt: string
+  type: 'permanent' | 'temporary'
+  usageCount?: number
+  description?: string
 }
 
 export interface CreateApiKeyInput {
   name: string
   permissions: string[]
   expiresAt?: string
+  type?: 'permanent' | 'temporary'
+  description?: string
+}
+
+export type ApiKeyStatus = 'active' | 'expired' | 'revoked' | 'temporary'
+
+export interface ApiKeyInfo extends ApiKey {
+  status: ApiKeyStatus
+  daysUntilExpiry?: number
+  isExpired: boolean
+  isExpiringSoon: boolean
 }
 
 // Report Types
+export interface ReportInsight {
+  title: string
+  description: string
+  value?: string | number
+  type: 'positive' | 'warning' | 'neutral'
+  actionable: boolean
+}
+
 export interface Report {
   id: string
   kosId: string
@@ -160,6 +223,62 @@ export interface Report {
   generatedAt: string
   format: 'pdf' | 'json'
   shareUrl?: string
+  insights: ReportInsight[]
+  summary: string
+  recommendations: string[]
+}
+
+export interface DetailedReportData {
+  kosId: string
+  kosName: string
+  period: {
+    startDate: string
+    endDate: string
+  }
+  metrics: {
+    occupancyRate: number
+    revenue: number
+    costBreakdown: Record<string, number>
+    roi: number
+    margin: number
+  }
+  comparison: {
+    marketAverage: number
+    competitorAverage: number
+    yourPrice: number
+    pricingStrategy: 'above' | 'equal' | 'below' | 'neutral'
+  }
+  ahpAnalysis: {
+    topCriteria: Array<{ name: string; weight: number }>
+    consistencyScore: number
+  }
+  cbpAnalysis: {
+    floorPrice: number
+    recommendedPrice: number
+    profitMargin: number
+  }
+}
+
+// Validation Types
+export interface ValidationError {
+  field: string
+  message: string
+  severity: 'error' | 'warning'
+}
+
+export interface KosValidation {
+  isValid: boolean
+  errors: ValidationError[]
+  missingMandatoryFields: string[]
+  canCalculateAHP: boolean
+  canCalculateCBP: boolean
+}
+
+export interface CalculationValidation {
+  canProceed: boolean
+  missingFields: string[]
+  warnings: string[]
+  blockingReason?: string
 }
 
 // Dashboard Types

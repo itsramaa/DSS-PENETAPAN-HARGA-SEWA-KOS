@@ -25,6 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const mainNav = [
   {
@@ -85,25 +86,25 @@ export function AppSidebar({ isCollapsed = false, onCollapse }: AppSidebarProps)
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'flex h-screen flex-col border-r border-purple-200/50 bg-gradient-to-b from-white to-purple-50/30 transition-all duration-300',
+          'flex h-screen flex-col border-r border-purple-200/50 bg-gradient-to-b from-white to-purple-50/30 transition-all duration-300 dark:border-purple-900/50 dark:from-gray-950 dark:to-purple-950/30',
           isCollapsed ? 'w-16' : 'w-64'
         )}
       >
         {/* Header */}
-        <div className="flex h-16 items-center justify-between border-b border-purple-200/50 px-4">
+        <div className="flex h-16 items-center justify-between border-b border-purple-200/50 px-4 dark:border-purple-900/50">
           {!isCollapsed && (
             <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-purple-700 text-white shadow-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-purple-700 text-white shadow-sm dark:from-purple-500 dark:to-purple-600">
                 <Building2 className="h-4 w-4" />
               </div>
-              <span className="font-semibold text-gray-900">DSS Kos</span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100">DSS Kos</span>
             </Link>
           )}
           <Button
             variant="ghost"
             size="icon"
             onClick={onCollapse}
-            className="h-8 w-8 text-gray-500 hover:bg-purple-100 hover:text-purple-700"
+            className="h-8 w-8 text-gray-500 hover:bg-purple-100 hover:text-purple-700 dark:text-gray-400 dark:hover:bg-purple-950/50 dark:hover:text-purple-300"
           >
             <ChevronRight
               className={cn('h-4 w-4 transition-transform', !isCollapsed && 'rotate-180')}
@@ -123,11 +124,11 @@ export function AppSidebar({ isCollapsed = false, onCollapse }: AppSidebarProps)
                   className={cn(
                     'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
                     isActive
-                      ? 'bg-purple-100 text-purple-700 shadow-sm'
-                      : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700'
+                      ? 'bg-purple-100 text-purple-700 shadow-sm dark:bg-purple-950/50 dark:text-purple-300'
+                      : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700 dark:text-gray-400 dark:hover:bg-purple-950/30 dark:hover:text-purple-300'
                   )}
                 >
-                  <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-purple-600')} />
+                  <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-purple-600 dark:text-purple-400')} />
                   {!isCollapsed && <span>{item.title}</span>}
                 </Link>
               )
@@ -147,7 +148,7 @@ export function AppSidebar({ isCollapsed = false, onCollapse }: AppSidebarProps)
             })}
           </nav>
 
-          <Separator className="my-4 bg-purple-200/50" />
+          <Separator className="my-4 bg-purple-200/50 dark:bg-purple-900/50" />
 
           <nav className="space-y-1">
             {settingsNav.map((item) => {
@@ -159,11 +160,11 @@ export function AppSidebar({ isCollapsed = false, onCollapse }: AppSidebarProps)
                   className={cn(
                     'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
                     isActive
-                      ? 'bg-purple-100 text-purple-700 shadow-sm'
-                      : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700'
+                      ? 'bg-purple-100 text-purple-700 shadow-sm dark:bg-purple-950/50 dark:text-purple-300'
+                      : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700 dark:text-gray-400 dark:hover:bg-purple-950/30 dark:hover:text-purple-300'
                   )}
                 >
-                  <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-purple-600')} />
+                  <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-purple-600 dark:text-purple-400')} />
                   {!isCollapsed && <span>{item.title}</span>}
                 </Link>
               )
@@ -185,18 +186,33 @@ export function AppSidebar({ isCollapsed = false, onCollapse }: AppSidebarProps)
         </ScrollArea>
 
         {/* User Section */}
-        <div className="border-t border-purple-200/50 p-3">
+        <div className="border-t border-purple-200/50 p-3 dark:border-purple-900/50">
           {!isCollapsed && user && (
-            <div className="mb-2 rounded-lg bg-purple-50 px-3 py-2">
-              <p className="text-sm font-medium text-gray-900">{user.name}</p>
-              <p className="text-xs text-gray-500">{user.email}</p>
+            <div className="mb-2 rounded-lg bg-purple-50 px-3 py-2 dark:bg-purple-950/50">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
             </div>
           )}
+          <div className="mb-2 flex gap-2">
+            {!isCollapsed && <ThemeToggle />}
+            {isCollapsed && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="w-full">
+                    <ThemeToggle />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-gray-900 text-white">
+                  Theme
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
           <Button
             variant="ghost"
             onClick={logout}
             className={cn(
-              'w-full justify-start gap-3 text-red-600 hover:bg-red-50 hover:text-red-700',
+              'w-full justify-start gap-3 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300',
               isCollapsed && 'justify-center px-0'
             )}
           >
