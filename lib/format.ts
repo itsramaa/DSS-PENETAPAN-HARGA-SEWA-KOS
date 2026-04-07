@@ -32,3 +32,11 @@ export function formatDateTime(date: string | Date): string {
     timeStyle: 'short',
   }).format(new Date(date))
 }
+
+// Mask sensitive API key for display
+export function maskApiKey(key: string): string {
+  if (key.length <= 8) return key
+  const start = key.substring(0, 4)
+  const end = key.substring(key.length - 4)
+  return `${start}${'•'.repeat(key.length - 8)}${end}`
+}
