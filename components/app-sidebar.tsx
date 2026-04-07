@@ -25,8 +25,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ThemeToggle } from '@/components/theme-toggle'
-
 const mainNav = [
   {
     title: 'Dashboard',
@@ -193,21 +191,6 @@ export function AppSidebar({ isCollapsed = false, onCollapse }: AppSidebarProps)
               <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
             </div>
           )}
-          <div className="mb-2 flex gap-2">
-            {!isCollapsed && <ThemeToggle />}
-            {isCollapsed && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="w-full">
-                    <ThemeToggle />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="bg-gray-900 text-white">
-                  Theme
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </div>
           <Button
             variant="ghost"
             onClick={logout}

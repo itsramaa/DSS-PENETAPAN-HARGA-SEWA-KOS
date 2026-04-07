@@ -64,6 +64,8 @@ import {
   Cell,
 } from 'recharts'
 import { toast } from 'sonner'
+import { KosDetailStatistics } from '@/components/kos-detail-statistics'
+import { CalculationBlockingCard } from '@/components/calculation-blocking-card'
 
 const CHART_COLORS = ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe']
 
@@ -330,6 +332,22 @@ export default function KosDetailPage({ params }: { params: Promise<{ id: string
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Blocking Cards for Missing Data */}
+      {validation && !validation.canCalculateAHP && (
+        <CalculationBlockingCard
+          type="AHP"
+          kosId={id}
+          missingFields={validation.missingFields}
+        />
+      )}
+      {validation && !validation.canCalculateCBP && (
+        <CalculationBlockingCard
+          type="CBP"
+          kosId={id}
+          missingFields={validation.missingFields}
+        />
       )}
 
       {/* Quick Actions */}
@@ -629,124 +647,15 @@ export default function KosDetailPage({ params }: { params: Promise<{ id: string
                 <Skeleton key={i} className="h-80" />
               ))}
             </div>
-          ) : statistics ? (
-            <div className="grid gap-6 lg:grid-cols-2">
-              {/* Occupancy Chart */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    Tingkat Okupansi
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={statistics.occupancyHistory}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                      <XAxis dataKey="month" className="text-xs" />
-                      <YAxis domain={[0, 100]} className="text-xs" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px',
-                        }}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="rate" 
-                        stroke="hsl(var(--primary))" 
-                        strokeWidth={2}
-                        dot={{ fill: 'hsl(var(--primary))' }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Revenue Chart */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <BarChart3 className="h-5 w-5 text-green-600" />
-                    Pendapatan
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={statistics.revenueHistory}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                      <XAxis dataKey="month" className="text-xs" />
-                      <YAxis className="text-xs" tickFormatter={(v) => `${(v/1000000).toFixed(0)}jt`} />
-                      <Tooltip
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px',
-                        }}
-                        formatter={(value: number) => formatCurrency(value)}
-                      />
-                      <Legend />
-                      <Bar dataKey="actual" name="Aktual" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="projected" name="Proyeksi" fill="hsl(var(--muted-foreground))" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Competitor Prices */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Perbandingan Harga Kompetitor</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between rounded-lg bg-primary/10 p-3">
-                      <div>
-                        <p className="font-semibold text-primary">{kos.name}</p>
-                        <p className="text-xs text-muted-foreground">Kos Anda</p>
-                      </div>
-                      <p className="text-lg font-bold text-primary">{formatCurrency(kos.currentPrice)}</p>
-                    </div>
-                    {statistics.competitorPrices.map((comp, i) => (
-                      <div key={i} className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
-                        <div>
-                          <p className="font-medium">{comp.name}</p>
-                          <p className="text-xs text-muted-foreground">{comp.distance}m dari kos Anda</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold">{formatCurrency(comp.price)}</p>
-                          <p className={`text-xs ${comp.price > kos.currentPrice ? 'text-green-600' : 'text-red-600'}`}>
-                            {comp.price > kos.currentPrice ? '+' : ''}{Math.round((comp.price - kos.currentPrice) / kos.currentPrice * 100)}%
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Facility Scores */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Skor Fasilitas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {statistics.facilityScores.map((fs, i) => (
-                      <div key={i}>
-                        <div className="mb-1 flex justify-between text-sm">
-                          <span>{fs.facility}</span>
-                          <span className="font-medium">{fs.score.toFixed(1)}/5</span>
-                        </div>
-                        <Progress value={fs.score * 20} className="h-2" />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ) : null}
+          ) : kos ? (
+            <KosDetailStatistics kos={kos} />
+          ) : (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground">Belum ada data statistik</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Costs Tab */}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Building2,
@@ -12,6 +13,7 @@ import {
   MapPin,
   DoorOpen,
   Square,
+  Eye,
 } from 'lucide-react'
 import { kosApi } from '@/lib/api-mock'
 import type { KosData, Facility, FixedCost, VariableCost, DEFAULT_FACILITIES } from '@/types'
@@ -90,8 +92,8 @@ export default function KosPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Data Kos</h1>
-          <p className="mt-1 text-gray-500">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Data Kos</h1>
+          <p className="mt-1 text-gray-500 dark:text-gray-400">
             Kelola data kos untuk analisis penetapan harga
           </p>
         </div>
@@ -151,55 +153,66 @@ export default function KosPage() {
           {filteredKos.map((kos) => (
             <Card
               key={kos.id}
-              className="group border-purple-100 transition-all hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100"
+              className="group border-purple-100 transition-all hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100 dark:border-purple-900/30 dark:hover:border-purple-700 dark:hover:shadow-purple-950/50"
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 text-white">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 text-white dark:from-purple-600 dark:to-purple-800">
                       <Building2 className="h-5 w-5" />
                     </div>
-                    <div>
-                      <CardTitle className="text-lg">{kos.name}</CardTitle>
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-lg truncate dark:text-gray-100">{kos.name}</CardTitle>
                     </div>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                  <div className="flex gap-1 shrink-0">
+                    <Link href={`/kos/${kos.id}`}>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                        className="h-8 w-8 text-gray-500 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400"
                       >
-                        <MoreHorizontal className="h-4 w-4" />
+                        <Eye className="h-4 w-4" />
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setEditingKos(kos)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setDeleteId(kos.id)}
-                        className="text-red-600 focus:text-red-600"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Hapus
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                    </Link>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setEditingKos(kos)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setDeleteId(kos.id)}
+                          className="text-red-600 focus:text-red-600 dark:text-red-400"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Hapus
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center gap-2 text-sm text-gray-500">
+                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                   <MapPin className="h-4 w-4" />
                   <span className="line-clamp-1">{kos.address}</span>
                 </div>
                 <div className="flex gap-4 text-sm">
-                  <div className="flex items-center gap-1.5 text-gray-600">
+                  <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
                     <DoorOpen className="h-4 w-4" />
                     <span>{kos.totalRooms} kamar</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-gray-600">
+                  <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
                     <Square className="h-4 w-4" />
                     <span>{kos.roomSize.width}x{kos.roomSize.length} m</span>
                   </div>

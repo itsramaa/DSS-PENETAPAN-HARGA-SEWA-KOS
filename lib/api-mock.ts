@@ -711,6 +711,130 @@ export const apiKeyApi = {
 }
 
 // =============================================
+// VALIDATION API
+// =============================================
+export const validationApi = {
+  validateKos: async (kosId: string): Promise<ApiResponse<{ isComplete: boolean; missingFields: string[]; warnings: string[]; canCalculateAHP: boolean; canCalculateCBP: boolean }>> => {
+    await delay(200)
+    const kos = mockKosData.find(k => k.id === kosId)
+    if (!kos) {
+      return {
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'Kos tidak ditemukan' },
+      }
+    }
+
+    const missingFields: string[] = []
+    const warnings: string[] = []
+
+    // Check mandatory fields
+    if (!kos.name) missingFields.push('Nama Kos')
+    if (!kos.address) missingFields.push('Alamat')
+    if (!kos.ownerName) missingFields.push('Nama Pemilik')
+    if (!kos.currentPrice) missingFields.push('Harga Saat Ini')
+
+    // Check facilities for AHP
+    const hasFacilities = 
+      kos.facilities.room.length > 0 &&
+      kos.facilities.bathroom.length > 0 &&
+      kos.facilities.building.length > 0
+
+    if (!hasFacilities) {
+      missingFields.push('Fasilitas (minimal 1 di setiap kategori)')
+    }
+
+    // Check costs for CBP
+    const hasCosts = 
+      kos.costs.fixedCosts.length > 0 &&
+      kos.costs.variableCosts.length > 0
+
+    if (!hasCosts) {
+      missingFields.push('Biaya (fixed dan variable)')
+    }
+
+    // Warnings
+    if (kos.totalReviews === 0) warnings.push('Belum ada review dari penyewa')
+    if (kos.rating < 4) warnings.push('Rating cukup rendah, pertimbangkan untuk meningkatkan service')
+
+    return {
+      success: true,
+      data: {
+        isComplete: missingFields.length === 0,
+        missingFields,
+        warnings,
+        canCalculateAHP: hasFacilities && kos.name && kos.address,
+        canCalculateCBP: hasCosts && kos.currentPrice > 0,
+      },
+    }
+  },
+}
+
+// =============================================
+// STATISTICS API
+// =============================================
+export const statisticsApi = {
+  getKosStatistics: async (kosId: string): Promise<ApiResponse<any>> => {
+    await delay(400)
+    const kos = mockKosData.find(k => k.id === kosId)
+    if (!kos) {
+      return {
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'Kos tidak ditemukan' },
+      }
+    }
+
+    // Generate mock statistics
+    const occupancyHistory = [
+      { month: 'Jan', rate: 65 },
+      { month: 'Feb', rate: 72 },
+      { month: 'Mar', rate: 85 },
+      { month: 'Apr', rate: 78 },
+      { month: 'May', rate: 88 },
+      { month: 'Jun', rate: 92 },
+    ]
+
+    const revenueHistory = [
+      { month: 'Jan', actual: 5400000, projected: 5000000 },
+      { month: 'Feb', actual: 5900000, projected: 5800000 },
+      { month: 'Mar', actual: 8800000, projected: 8500000 },
+      { month: 'Apr', actual: 7200000, projected: 7800000 },
+      { month: 'May', actual: 9600000, projected: 9200000 },
+      { month: 'Jun', actual: 10200000, projected: 10000000 },
+    ]
+
+    const competitorPrices = [
+      { name: 'Kos Tetangga A', distance: 200, price: 850000 },
+      { name: 'Kos Tetangga B', distance: 500, price: 950000 },
+      { name: 'Kos Tetangga C', distance: 800, price: 750000 },
+    ]
+
+    const facilityScores = [
+      { facility: 'Kamar', score: 4.5 },
+      { facility: 'Kamar Mandi', score: 4.0 },
+      { facility: 'Bangunan', score: 3.8 },
+      { facility: 'Parkir', score: 4.2 },
+    ]
+
+    const calculationHistory = [
+      { id: 'calc-001', type: 'AHP', date: '2024-03-15T10:00:00Z', result: 950000 },
+      { id: 'calc-002', type: 'CBP', date: '2024-03-14T14:30:00Z', result: 850000 },
+      { id: 'calc-003', type: 'Integration', date: '2024-03-13T09:15:00Z', result: 900000 },
+    ]
+
+    return {
+      success: true,
+      data: {
+        occupancyHistory,
+        revenueHistory,
+        competitorPrices,
+        facilityScores,
+        calculationHistory,
+      },
+    }
+  },
+}
+
+// =============================================
 // DASHBOARD API
 // =============================================
 export const dashboardApi = {
