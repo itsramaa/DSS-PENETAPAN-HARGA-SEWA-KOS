@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AppSidebar } from '@/components/app-sidebar'
+import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 import { useAuth } from '@/lib/auth-context'
 import { Spinner } from '@/components/ui/spinner'
 
@@ -37,14 +38,19 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
-      <AppSidebar
-        isCollapsed={isCollapsed}
-        onCollapse={() => setIsCollapsed(!isCollapsed)}
-      />
-      <main className="flex-1 overflow-auto bg-gradient-to-br from-white to-gray-50 dark:from-gray-950 dark:to-gray-900">
-        <div className="min-h-full p-6 lg:p-8">{children}</div>
+    <div className="flex h-screen flex-col bg-gray-50 dark:bg-gray-950 md:flex-row">
+      <div className="hidden md:block">
+        <AppSidebar
+          isCollapsed={isCollapsed}
+          onCollapse={() => setIsCollapsed(!isCollapsed)}
+        />
+      </div>
+      <main className="flex-1 overflow-auto bg-gradient-to-br from-white to-gray-50 pb-20 dark:from-gray-950 dark:to-gray-900 md:pb-0">
+        <div className="min-h-full p-4 sm:p-6 lg:p-8">{children}</div>
       </main>
+      <div className="md:hidden">
+        <MobileBottomNav />
+      </div>
     </div>
   )
 }

@@ -134,7 +134,7 @@ export default function KosPage() {
 
       {/* Kos List */}
       {isLoading ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="border-purple-100">
               <CardContent className="p-6">
@@ -149,7 +149,7 @@ export default function KosPage() {
           ))}
         </div>
       ) : filteredKos && filteredKos.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {filteredKos.map((kos) => (
             <Card
               key={kos.id}

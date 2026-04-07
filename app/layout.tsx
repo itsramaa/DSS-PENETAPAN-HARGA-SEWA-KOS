@@ -1,10 +1,20 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Montserrat, Poppins } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Providers } from '@/lib/providers'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const montserrat = Montserrat({ 
+  subsets: ['latin', 'latin-ext'], 
+  variable: '--font-montserrat',
+  weight: ['400', '500', '600', '700', '800'],
+})
+
+const poppins = Poppins({ 
+  subsets: ['latin', 'latin-ext'], 
+  variable: '--font-poppins',
+  weight: ['400', '500', '600', '700', '800'],
+})
 
 export const metadata: Metadata = {
   title: 'DSS Kos - Decision Support System',
@@ -35,8 +45,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="id" className={inter.variable}>
-      <body className="font-sans antialiased">
+    <html lang="id" className={`${montserrat.variable} ${poppins.variable}`}>
+      <body className="font-poppins antialiased">
         <Providers>{children}</Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
